@@ -63,7 +63,7 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onFileAccepted, isLoading })
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`
-          relative border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-200 ease-in-out cursor-pointer group
+          relative border-2 border-dashed rounded-2xl p-6 sm:p-10 text-center transition-all duration-200 ease-in-out cursor-pointer group
           ${isDragActive 
             ? 'border-brand-500 bg-brand-50 scale-[1.01] shadow-lg' 
             : 'border-slate-300 hover:border-brand-400 hover:bg-slate-50'

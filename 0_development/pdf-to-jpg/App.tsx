@@ -62,20 +62,20 @@ const App: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+      <main className="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 sm:space-y-12">
         
         {/* Header Section */}
         <div className="text-center space-y-4 max-w-3xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">
             Convert PDF to JPG <br/>
             <span className="text-brand-600">Instantly & Securely</span>
           </h1>
-          <p className="text-lg text-slate-600 leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
             Extract pages from your PDF documents as high-quality JPG images. 
             All processing happens in your browser—your files never leave your device.
           </p>
           
-          <div className="flex items-center justify-center gap-6 text-sm text-slate-500 pt-2">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm text-slate-500 pt-2">
             <div className="flex items-center"><Zap size={16} className="mr-1.5 text-yellow-500" /> Blazing Fast</div>
             <div className="flex items-center"><ShieldCheck size={16} className="mr-1.5 text-green-500" /> 100% Private</div>
             <div className="flex items-center"><CheckCircle2 size={16} className="mr-1.5 text-brand-500" /> High Quality</div>
@@ -83,7 +83,7 @@ const App: React.FC = () => {
         </div>
 
         {/* Converter Area */}
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {state.status === ConversionStatus.IDLE && (
             <Dropzone onFileAccepted={processFile} isLoading={false} />
           )}
