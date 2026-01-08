@@ -1,10 +1,38 @@
 import { ConvertedImage } from '../types';
-import { v4 as uuidv4 } from 'uuid'; // Using simple shim if uuid not avail, but for this env we use logic below
+import { v4 as uuidv4 } from 'uuid';
 
-// Dynamic import for PDF.js to ensure we get the worker from CDN
+// Constants for PDF.js CDN
 const PDFJS_VERSION = '3.11.174';
 const PDFJS_CDN = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.min.js`;
 const PDFJS_WORKER_CDN = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`;
+
+// Minimal type definitions for PDF.js to avoid 'any'
+interface PDFViewport {
+  width: number;
+  height: number;
+}
+
+interface PDFRenderContext {
+  canvasContext: CanvasRenderingContext2D;
+  viewport: PDFViewport;
+}
+
+interface PDFPageProxy {
+  getViewport(params: { scale: number }): PDFViewport;
+  render(params: PDFRenderContext): { promise: Promise<void> };
+}
+
+interface PDFDocumentProxy {
+  numPages: number;
+  getPage(pageNumber: number): Promise<PDFPageProxy>;
+}
+
+interface PDFJSGlobal {
+  GlobalWorkerOptions: {
+    workerSrc: string;
+  };
+  getDocument(src: string | Uint8Array | { data: ArrayBuffer; cMapUrl: string; cMapPacked: boolean }): { promise: Promise<PDFDocumentProxy> };
+}
 
 let isPdfJsLoaded = false;
 
@@ -23,11 +51,18 @@ const loadScript = (src: string): Promise<void> => {
   });
 };
 
-export const initPdfJs = async () => {
-  if (isPdfJsLoaded) return (window as any).pdfjsLib;
+export const initPdfJs = async (): Promise<PDFJSGlobal> => {
+  if (isPdfJsLoaded && (window as any).pdfjsLib) {
+    return (window as any).pdfjsLib;
+  }
 
   await loadScript(PDFJS_CDN);
   const pdfjsLib = (window as any).pdfjsLib;
+  
+  if (!pdfjsLib) {
+    throw new Error('PDF.js library failed to load');
+  }
+
   pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_CDN;
   isPdfJsLoaded = true;
   return pdfjsLib;
@@ -43,7 +78,7 @@ export const readFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> => {
 };
 
 export const renderPageToBlob = async (
-  pdfDoc: any, 
+  pdfDoc: PDFDocumentProxy, 
   pageNumber: number, 
   scale: number = 2.0 // High quality
 ): Promise<ConvertedImage> => {
@@ -61,7 +96,7 @@ export const renderPageToBlob = async (
   if (!context) throw new Error('Canvas context not available');
 
   // Render PDF page into canvas context
-  const renderContext = {
+  const renderContext: PDFRenderContext = {
     canvasContext: context,
     viewport: viewport,
   };
@@ -77,7 +112,7 @@ export const renderPageToBlob = async (
       }
       const url = URL.createObjectURL(blob);
       resolve({
-        id: Math.random().toString(36).substring(7),
+        id: uuidv4(),
         pageNumber,
         url,
         blob,
