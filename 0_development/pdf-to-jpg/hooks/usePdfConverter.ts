@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { ConversionState, ConversionStatus, ConvertedImage } from '../types';
 import { initPdfJs, readFileAsArrayBuffer, renderPageToBlob } from '../utils/pdfUtils';
+import { APP_CONFIG } from '../utils/constants';
 
 const INITIAL_STATE: ConversionState = {
   status: ConversionStatus.IDLE,
@@ -57,7 +58,7 @@ export const usePdfConverter = () => {
           throw new Error('Conversion cancelled');
         }
 
-        const image = await renderPageToBlob(pdfDoc, i, 1.5); // 1.5 scale is a good balance
+        const image = await renderPageToBlob(pdfDoc, i, APP_CONFIG.PDF_RENDER_SCALE);
         newImages.push(image);
 
         setState(prev => ({

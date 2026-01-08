@@ -1,38 +1,17 @@
-import React, { useState } from 'react';
-import JSZip from 'jszip';
-import saveAs from 'file-saver';
+import React from 'react';
 import { FileText, Download, RefreshCw, Zap, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { Dropzone } from './components/Dropzone';
 import { ImageGrid } from './components/ImageGrid';
 import { usePdfConverter } from './hooks/usePdfConverter';
+import { useZipDownload } from './hooks/useZipDownload';
 import { ConversionStatus } from './types';
+import { APP_CONFIG } from './utils/constants';
 
 const App: React.FC = () => {
   const { state, processFile, reset } = usePdfConverter();
-  const [isZipping, setIsZipping] = useState(false);
+  const { isZipping, downloadAllAsZip } = useZipDownload();
 
-  const downloadAllAsZip = async () => {
-    if (state.images.length === 0) return;
-    setIsZipping(true);
-    
-    try {
-      const zip = new JSZip();
-      const folder = zip.folder("converted_images");
-      const baseName = state.fileName?.replace('.pdf', '') || 'document';
-
-      state.images.forEach((img) => {
-        folder?.file(`${baseName}_page_${img.pageNumber}.jpg`, img.blob);
-      });
-
-      const content = await zip.generateAsync({ type: "blob" });
-      saveAs(content, `${baseName}_images.zip`);
-    } catch (e) {
-      console.error("Failed to zip", e);
-      alert("Failed to create zip file.");
-    } finally {
-      setIsZipping(false);
-    }
-  };
+  const handleDownloadZip = () => downloadAllAsZip(state.images, state.fileName);
 
   const isProcessing = state.status === ConversionStatus.READING || state.status === ConversionStatus.CONVERTING;
   const isDone = state.status === ConversionStatus.COMPLETED || (state.status === ConversionStatus.CONVERTING && state.images.length > 0);
@@ -48,7 +27,7 @@ const App: React.FC = () => {
               <FileText size={20} strokeWidth={2.5} />
             </div>
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600">
-              PDF2JPG <span className="text-brand-600 font-extrabold">Pro</span>
+              {APP_CONFIG.NAME.split(' ')[0]} <span className="text-brand-600 font-extrabold">{APP_CONFIG.NAME.split(' ')[1]}</span>
             </span>
           </div>
           <div className="flex items-center space-x-4 text-sm font-medium text-slate-500">
@@ -128,11 +107,11 @@ const App: React.FC = () => {
                     <RefreshCw size={18} className="mr-2" />
                     New File
                   </button>
-                  <button 
-                    onClick={downloadAllAsZip}
-                    disabled={isZipping}
-                    className="flex-1 sm:flex-none items-center justify-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium shadow-md transition-all flex disabled:opacity-70 disabled:cursor-not-allowed"
-                  >
+              <button 
+                onClick={handleDownloadZip}
+                disabled={isZipping}
+                className="flex-1 sm:flex-none items-center justify-center px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium shadow-md transition-all flex disabled:opacity-70 disabled:cursor-not-allowed"
+              >
                     {isZipping ? (
                       <span className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
                     ) : (
@@ -153,7 +132,7 @@ const App: React.FC = () => {
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-8">
         <div className="max-w-6xl mx-auto px-4 text-center text-slate-400 text-sm">
-          <p>© {new Date().getFullYear()} PDF2JPG Pro. Built with React & Tailwind.</p>
+          <p>© {new Date().getFullYear()} {APP_CONFIG.NAME}. Built with React & Tailwind.</p>
         </div>
       </footer>
     </div>

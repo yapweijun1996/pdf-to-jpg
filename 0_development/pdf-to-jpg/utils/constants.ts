@@ -1,0 +1,8 @@
+export const APP_CONFIG = {
+  NAME: 'PDF2JPG Pro',
+  MAX_FILE_SIZE_MB: 50,
+  MAX_FILE_SIZE_BYTES: 50 * 1024 * 1024,
+  PDF_RENDER_SCALE: 1.5,
+  JPEG_QUALITY: 0.85,
+  ACCEPTED_FILE_TYPE: 'application/pdf',
+};

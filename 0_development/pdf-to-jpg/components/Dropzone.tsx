@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { UploadCloud, FileType, AlertCircle } from 'lucide-react';
+import { APP_CONFIG } from '../utils/constants';
 
 interface DropzoneProps {
   onFileAccepted: (file: File) => void;
@@ -24,13 +25,13 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onFileAccepted, isLoading })
 
   const validateAndAccept = (file: File) => {
     setError(null);
-    if (file.type !== 'application/pdf') {
+    if (file.type !== APP_CONFIG.ACCEPTED_FILE_TYPE) {
       setError('Please upload a valid PDF file.');
       return;
     }
-    // Limit size if needed, e.g., 50MB
-    if (file.size > 50 * 1024 * 1024) {
-      setError('File size too large (Max 50MB).');
+    
+    if (file.size > APP_CONFIG.MAX_FILE_SIZE_BYTES) {
+      setError(`File size too large (Max ${APP_CONFIG.MAX_FILE_SIZE_MB}MB).`);
       return;
     }
     onFileAccepted(file);
@@ -98,7 +99,7 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onFileAccepted, isLoading })
               {isLoading ? 'Processing PDF...' : 'Click or drag PDF here'}
             </h3>
             <p className="text-sm text-slate-500">
-              Maximum file size 50MB. Secure client-side conversion.
+              Maximum file size {APP_CONFIG.MAX_FILE_SIZE_MB}MB. Secure client-side conversion.
             </p>
           </div>
         </div>
