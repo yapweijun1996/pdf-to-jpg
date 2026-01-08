@@ -1,7 +1,8 @@
-import React from 'react';
-import { FileText, Download, RefreshCw, Zap, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { FileText, Download, RefreshCw, Zap, ShieldCheck, CheckCircle2, Github } from 'lucide-react';
 import { Dropzone } from './components/Dropzone';
 import { ImageGrid } from './components/ImageGrid';
+import { Modal } from './components/Modal';
 import { usePdfConverter } from './hooks/usePdfConverter';
 import { useZipDownload } from './hooks/useZipDownload';
 import { ConversionStatus } from './types';
@@ -10,6 +11,8 @@ import { APP_CONFIG } from './utils/constants';
 const App: React.FC = () => {
   const { state, processFile, reset } = usePdfConverter();
   const { isZipping, downloadAllAsZip } = useZipDownload();
+  
+  const [activeModal, setActiveModal] = useState<'how-it-works' | 'privacy' | null>(null);
 
   const handleDownloadZip = () => downloadAllAsZip(state.images, state.fileName);
 
@@ -31,11 +34,18 @@ const App: React.FC = () => {
             </span>
           </div>
           <div className="flex items-center space-x-4 text-sm font-medium text-slate-500">
-             <a href="#" className="hover:text-brand-600 transition-colors hidden sm:block">How it works</a>
-             <a href="#" className="hover:text-brand-600 transition-colors hidden sm:block">Privacy</a>
-             <button className="bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors text-xs sm:text-sm">
-               GitHub
-             </button>
+             <button onClick={() => setActiveModal('how-it-works')} className="hover:text-brand-600 transition-colors hidden sm:block">How it works</button>
+             <button onClick={() => setActiveModal('privacy')} className="hover:text-brand-600 transition-colors hidden sm:block">Privacy</button>
+             <a 
+               href="https://github.com/yapweijun1996/pdf-to-jpg" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               className="bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors text-xs sm:text-sm flex items-center gap-2"
+             >
+               <Github size={16} />
+               <span className="hidden sm:inline">GitHub</span>
+               <span className="sm:hidden">Code</span>
+             </a>
           </div>
         </div>
       </nav>
@@ -135,6 +145,60 @@ const App: React.FC = () => {
           <p>© {new Date().getFullYear()} {APP_CONFIG.NAME}. Built with React & Tailwind.</p>
         </div>
       </footer>
+
+      {/* Modals */}
+      <Modal 
+        isOpen={activeModal === 'how-it-works'} 
+        onClose={() => setActiveModal(null)} 
+        title="How it Works"
+      >
+        <div className="space-y-4 text-slate-600">
+          <p>
+            PDF to JPG Pro uses advanced browser technologies (WebAssembly & HTML5 Canvas) to render your PDF files directly on your device.
+          </p>
+          <ol className="list-decimal pl-5 space-y-2">
+            <li><strong>Select your PDF:</strong> Drag and drop or click to select a file.</li>
+            <li><strong>Local Processing:</strong> The browser reads the file into memory.</li>
+            <li><strong>Rendering:</strong> Each page is rendered to a high-resolution canvas.</li>
+            <li><strong>Conversion:</strong> The canvas is converted to a JPG blob.</li>
+            <li><strong>Download:</strong> You save the images instantly to your disk.</li>
+          </ol>
+          <div className="bg-blue-50 p-4 rounded-lg text-blue-800 text-sm mt-4">
+            <Zap size={16} className="inline mr-1" />
+            No servers involved. It's just you and your browser.
+          </div>
+        </div>
+      </Modal>
+
+      <Modal 
+        isOpen={activeModal === 'privacy'} 
+        onClose={() => setActiveModal(null)} 
+        title="Privacy Policy"
+      >
+        <div className="space-y-4 text-slate-600">
+          <p className="font-medium text-slate-900">Your Data Stays With You.</p>
+          <p>
+            Unlike many online converters, we do <strong>not</strong> upload your files to the cloud.
+          </p>
+          <ul className="space-y-3">
+            <li className="flex items-start">
+              <ShieldCheck className="text-green-500 mr-2 flex-shrink-0 mt-0.5" size={18} />
+              <span>Files are processed entirely within your browser's sandbox.</span>
+            </li>
+            <li className="flex items-start">
+              <ShieldCheck className="text-green-500 mr-2 flex-shrink-0 mt-0.5" size={18} />
+              <span>We do not store, track, or view your documents.</span>
+            </li>
+            <li className="flex items-start">
+              <ShieldCheck className="text-green-500 mr-2 flex-shrink-0 mt-0.5" size={18} />
+              <span>Once you refresh the page, all memory of the file is wiped.</span>
+            </li>
+          </ul>
+          <p className="text-sm text-slate-400 mt-4 pt-4 border-t border-slate-100">
+            This project is open source. You can audit the code on GitHub to verify these claims.
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 };
