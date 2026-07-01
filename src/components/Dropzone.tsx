@@ -1,13 +1,14 @@
 import React, { useCallback, useState } from 'react';
 import { UploadCloud, AlertCircle } from 'lucide-react';
 import { APP_CONFIG } from '@/config/app';
+import { validatePdfFiles } from '@/lib/files/validation';
 
 interface DropzoneProps {
-  onFileAccepted: (file: File) => void;
+  onFilesAccepted: (files: File[]) => void;
   isLoading: boolean;
 }
 
-export const Dropzone: React.FC<DropzoneProps> = ({ onFileAccepted, isLoading }) => {
+export const Dropzone: React.FC<DropzoneProps> = ({ onFilesAccepted, isLoading }) => {
   const [isDragActive, setIsDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,19 +24,16 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onFileAccepted, isLoading })
     setIsDragActive(false);
   }, []);
 
-  const validateAndAccept = (file: File) => {
-    setError(null);
-    if (file.type !== APP_CONFIG.ACCEPTED_FILE_TYPE) {
-      setError('Please upload a valid PDF file.');
+  const validateAndAccept = useCallback((files: FileList | File[]) => {
+    const result = validatePdfFiles(Array.from(files));
+    setError(result.error);
+
+    if (result.error) {
       return;
     }
-    
-    if (file.size > APP_CONFIG.MAX_FILE_SIZE_BYTES) {
-      setError(`File size too large (Max ${APP_CONFIG.MAX_FILE_SIZE_MB}MB).`);
-      return;
-    }
-    onFileAccepted(file);
-  };
+
+    onFilesAccepted(result.acceptedFiles);
+  }, [onFilesAccepted]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -46,15 +44,16 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onFileAccepted, isLoading })
 
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
-      validateAndAccept(files[0]);
+      validateAndAccept(files);
     }
-  }, [isLoading]);
+  }, [isLoading, validateAndAccept]);
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      validateAndAccept(files[0]);
+      validateAndAccept(files);
     }
+    e.target.value = '';
   };
 
   return (
@@ -78,6 +77,7 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onFileAccepted, isLoading })
           id="file-input"
           className="hidden"
           accept=".pdf"
+          multiple
           onChange={handleFileInput}
           disabled={isLoading}
         />
@@ -96,10 +96,10 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onFileAccepted, isLoading })
           
           <div className="space-y-1">
             <h3 className="text-lg font-semibold text-slate-800">
-              {isLoading ? 'Processing PDF...' : 'Click or drag PDF here'}
+              {isLoading ? 'Processing PDFs...' : 'Click or drag PDFs here'}
             </h3>
             <p className="text-sm text-slate-500">
-              Maximum file size {APP_CONFIG.MAX_FILE_SIZE_MB}MB. Secure client-side conversion.
+              Batch PDF conversion. Max {APP_CONFIG.MAX_FILE_SIZE_MB}MB per file. Files stay on this device.
             </p>
           </div>
         </div>

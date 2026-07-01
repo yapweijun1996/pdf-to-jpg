@@ -6,6 +6,8 @@ const APP_SHELL = [
   "./",
   "./index.html",
   "./offline.html",
+  "./privacy.html",
+  "./terms.html",
   "./manifest.webmanifest",
   "./favicon.svg",
   "./apple-touch-icon.png",

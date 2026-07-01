@@ -18,12 +18,10 @@ const isIosDevice = () => {
 
 export const usePwaInstall = () => {
   const [promptEvent, setPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
-  const [installed, setInstalled] = useState(false);
-  const isIos = useMemo(isIosDevice, []);
+  const [installed, setInstalled] = useState(() => isStandalone());
+  const isIos = useMemo(() => isIosDevice(), []);
 
   useEffect(() => {
-    setInstalled(isStandalone());
-
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
       setPromptEvent(event as BeforeInstallPromptEvent);

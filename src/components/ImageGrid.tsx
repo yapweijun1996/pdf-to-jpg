@@ -1,17 +1,18 @@
 import React from 'react';
 import { Download, Image as ImageIcon } from 'lucide-react';
 import { ConvertedImage } from '@/types/conversion';
+import { buildImageFileName } from '@/lib/files/fileNames';
 import saveAs from 'file-saver';
 
 interface ImageGridProps {
   images: ConvertedImage[];
-  fileName: string | null;
+  outputBaseName: string;
+  totalPageCount: number;
 }
 
-export const ImageGrid: React.FC<ImageGridProps> = ({ images, fileName }) => {
+export const ImageGrid: React.FC<ImageGridProps> = ({ images, outputBaseName, totalPageCount }) => {
   const downloadImage = (image: ConvertedImage) => {
-    const baseName = fileName?.replace('.pdf', '') || 'document';
-    saveAs(image.blob, `${baseName}_page_${image.pageNumber}.jpg`);
+    saveAs(image.blob, buildImageFileName(outputBaseName, image.pageNumber, totalPageCount));
   };
 
   if (images.length === 0) return null;

@@ -1,33 +1,44 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import JSZip from 'jszip';
 import saveAs from 'file-saver';
-import { ConvertedImage } from '@/types/conversion';
+import { buildImageFileName, buildZipFileName } from '@/lib/files/fileNames';
+import { ConvertedDocument } from '@/types/conversion';
 
 export const useZipDownload = () => {
   const [isZipping, setIsZipping] = useState(false);
+  const [zipError, setZipError] = useState<string | null>(null);
 
-  const downloadAllAsZip = useCallback(async (images: ConvertedImage[], fileName: string | null) => {
-    if (images.length === 0) return;
+  const downloadDocumentsAsZip = useCallback(async (documents: ConvertedDocument[], archiveName = 'converted_images') => {
+    const completedDocuments = documents.filter((document) => document.images.length > 0);
+    if (completedDocuments.length === 0) return;
+
     setIsZipping(true);
-    
+    setZipError(null);
+
     try {
       const zip = new JSZip();
-      const folder = zip.folder("converted_images");
-      const baseName = fileName?.replace('.pdf', '') || 'document';
 
-      images.forEach((img) => {
-        folder?.file(`${baseName}_page_${img.pageNumber}.jpg`, img.blob);
+      completedDocuments.forEach((document) => {
+        const folder = zip.folder(document.outputBaseName);
+        document.images.forEach((image) => {
+          folder?.file(
+            buildImageFileName(document.outputBaseName, image.pageNumber, document.totalPageCount),
+            image.blob
+          );
+        });
       });
 
-      const content = await zip.generateAsync({ type: "blob" });
-      saveAs(content, `${baseName}_images.zip`);
-    } catch (e) {
-      console.error("Failed to zip", e);
-      alert("Failed to create zip file.");
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, buildZipFileName(archiveName));
+    } catch (error) {
+      console.error('Failed to zip', error);
+      setZipError('Failed to create the ZIP file. Try downloading individual JPG files.');
     } finally {
       setIsZipping(false);
     }
   }, []);
 
-  return { isZipping, downloadAllAsZip };
+  const clearZipError = useCallback(() => setZipError(null), []);
+
+  return { isZipping, zipError, downloadDocumentsAsZip, clearZipError };
 };
