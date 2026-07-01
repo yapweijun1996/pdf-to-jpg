@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Zap, ShieldCheck, CheckCircle2, Github, Lock, Code2, WifiOff } from 'lucide-react';
+import { Zap, ShieldCheck, CheckCircle2, Github, Lock, Code2, WifiOff } from 'lucide-react';
 import { ConversionErrorPanel } from '@/components/ConversionErrorPanel';
 import { ConversionResults } from '@/components/ConversionResults';
 import { ConversionSettings } from '@/components/ConversionSettings';
@@ -62,9 +62,11 @@ const App: React.FC = () => {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="bg-brand-600 text-white p-1.5 rounded-lg shadow-sm">
-              <FileText size={20} strokeWidth={2.5} />
-            </div>
+            <img
+              src={`${import.meta.env.BASE_URL}icon-512.png`}
+              alt=""
+              className="h-9 w-9 rounded-lg shadow-sm"
+            />
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600">
               {APP_CONFIG.NAME.split(' ')[0]} <span className="text-brand-600 font-extrabold">{APP_CONFIG.NAME.split(' ')[1]}</span>
             </span>
