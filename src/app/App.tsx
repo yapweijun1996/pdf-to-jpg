@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Zap, ShieldCheck, CheckCircle2, Github } from 'lucide-react';
+import { FileText, Zap, ShieldCheck, CheckCircle2, Github, Lock, Code2, WifiOff } from 'lucide-react';
 import { ConversionErrorPanel } from '@/components/ConversionErrorPanel';
 import { ConversionResults } from '@/components/ConversionResults';
 import { ConversionSettings } from '@/components/ConversionSettings';
@@ -107,6 +107,36 @@ const App: React.FC = () => {
             <div className="flex items-center"><ShieldCheck size={16} className="mr-1.5 text-green-500" /> 100% Private</div>
             <div className="flex items-center"><CheckCircle2 size={16} className="mr-1.5 text-brand-500" /> Quality Controls</div>
           </div>
+        </div>
+
+        {/* Trust Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+          <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-3">
+            <Lock size={20} className="text-brand-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-sm text-slate-900">No File Uploads</p>
+              <p className="text-xs text-slate-500 mt-0.5">Your PDFs never leave your device or touch a server.</p>
+            </div>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-3">
+            <WifiOff size={20} className="text-brand-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-sm text-slate-900">Works Without a Connection</p>
+              <p className="text-xs text-slate-500 mt-0.5">Conversion runs entirely in your browser, even offline.</p>
+            </div>
+          </div>
+          <a
+            href="https://github.com/yapweijun1996/pdf-to-jpg"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-3 hover:border-brand-300 transition-colors"
+          >
+            <Code2 size={20} className="text-brand-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-sm text-slate-900">Open Source</p>
+              <p className="text-xs text-slate-500 mt-0.5">Read the code yourself and verify the privacy claim.</p>
+            </div>
+          </a>
         </div>
 
         {/* Converter Area */}
