@@ -120,3 +120,6 @@ dist
 
 # Mac
 .DS_Store
+
+# Local Claude Code preview/dev server config
+.claude/
