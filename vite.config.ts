@@ -2,6 +2,7 @@ import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import copy from 'rollup-plugin-copy';
+import { createPwaPrecachePlugin } from './build/createPwaPrecachePlugin';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
@@ -18,7 +19,8 @@ export default defineConfig(({ mode }) => {
             { src: 'README.md', dest: 'dist' }
           ],
           hook: 'writeBundle' // Copy after bundle is written
-        })
+        }),
+        createPwaPrecachePlugin()
       ],
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),

@@ -1,10 +1,7 @@
 import { ConvertedImage } from '@/types/conversion';
-import { v4 as uuidv4 } from 'uuid';
-
-// Constants for PDF.js CDN
-const PDFJS_VERSION = '3.11.174';
-const PDFJS_CDN = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.min.js`;
-const PDFJS_WORKER_CDN = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`;
+import { APP_CONFIG } from '@/config/app';
+import type * as PdfJsModule from 'pdfjs-dist';
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 // Minimal type definitions for PDF.js to avoid 'any'
 interface PDFViewport {
@@ -34,38 +31,16 @@ interface PDFJSGlobal {
   getDocument(src: string | Uint8Array | { data: ArrayBuffer; cMapUrl: string; cMapPacked: boolean }): { promise: Promise<PDFDocumentProxy> };
 }
 
-let isPdfJsLoaded = false;
-
-// Helper to load script dynamically
-const loadScript = (src: string): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    if (document.querySelector(`script[src="${src}"]`)) {
-      resolve();
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = src;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
-    document.head.appendChild(script);
-  });
-};
+let pdfJsModule: typeof PdfJsModule | null = null;
 
 export const initPdfJs = async (): Promise<PDFJSGlobal> => {
-  if (isPdfJsLoaded && (window as any).pdfjsLib) {
-    return (window as any).pdfjsLib;
+  if (!pdfJsModule) {
+    pdfJsModule = await import('pdfjs-dist');
   }
 
-  await loadScript(PDFJS_CDN);
-  const pdfjsLib = (window as any).pdfjsLib;
-  
-  if (!pdfjsLib) {
-    throw new Error('PDF.js library failed to load');
-  }
-
-  pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_CDN;
-  isPdfJsLoaded = true;
-  return pdfjsLib;
+  const localPdfJs = pdfJsModule as unknown as PDFJSGlobal;
+  localPdfJs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+  return localPdfJs;
 };
 
 export const readFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> => {
@@ -112,13 +87,13 @@ export const renderPageToBlob = async (
       }
       const url = URL.createObjectURL(blob);
       resolve({
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         pageNumber,
         url,
         blob,
         width: viewport.width,
         height: viewport.height
       });
-    }, 'image/jpeg', 0.85); // 0.85 quality
+    }, 'image/jpeg', APP_CONFIG.JPEG_QUALITY);
   });
 };

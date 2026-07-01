@@ -33,3 +33,12 @@ graph TD
 
 2. Run the app:
    `npm run dev`
+
+## PWA Support
+
+The app is installable and caches its app shell for offline launches after the first production load.
+
+- Build production assets: `npm run build`
+- Preview the production build: `npm run preview`
+- PWA assets live in `public/manifest.webmanifest`, `public/sw.js`, and `public/offline.html`
+- The service worker caches only application files. User PDFs and generated JPG blobs stay in browser memory and are not persisted by the app.

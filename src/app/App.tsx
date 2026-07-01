@@ -3,7 +3,10 @@ import { FileText, Download, RefreshCw, Zap, ShieldCheck, CheckCircle2, Github }
 import { Dropzone } from '@/components/Dropzone';
 import { ImageGrid } from '@/components/ImageGrid';
 import { Modal } from '@/components/Modal';
+import { PwaInstallButton } from '@/components/PwaInstallButton';
+import { PwaUpdateToast } from '@/components/PwaUpdateToast';
 import { usePdfConverter } from '@/hooks/usePdfConverter';
+import { useServiceWorkerUpdate } from '@/hooks/useServiceWorkerUpdate';
 import { useZipDownload } from '@/hooks/useZipDownload';
 import { ConversionStatus } from '@/types/conversion';
 import { APP_CONFIG } from '@/config/app';
@@ -11,8 +14,9 @@ import { APP_CONFIG } from '@/config/app';
 const App: React.FC = () => {
   const { state, processFile, reset } = usePdfConverter();
   const { isZipping, downloadAllAsZip } = useZipDownload();
+  const { updateAvailable, updateApp } = useServiceWorkerUpdate();
   
-  const [activeModal, setActiveModal] = useState<'how-it-works' | 'privacy' | null>(null);
+  const [activeModal, setActiveModal] = useState<'how-it-works' | 'privacy' | 'ios-install' | null>(null);
 
   const handleDownloadZip = () => downloadAllAsZip(state.images, state.fileName);
 
@@ -36,6 +40,7 @@ const App: React.FC = () => {
           <div className="flex items-center space-x-4 text-sm font-medium text-slate-500">
              <button onClick={() => setActiveModal('how-it-works')} className="hover:text-brand-600 transition-colors hidden sm:block">How it works</button>
              <button onClick={() => setActiveModal('privacy')} className="hover:text-brand-600 transition-colors hidden sm:block">Privacy</button>
+             <PwaInstallButton onShowIosInstructions={() => setActiveModal('ios-install')} />
              <a 
                href="https://github.com/yapweijun1996/pdf-to-jpg" 
                target="_blank" 
@@ -146,6 +151,8 @@ const App: React.FC = () => {
         </div>
       </footer>
 
+      <PwaUpdateToast isVisible={updateAvailable} onRefresh={() => updateApp?.()} />
+
       {/* Modals */}
       <Modal 
         isOpen={activeModal === 'how-it-works'} 
@@ -196,6 +203,19 @@ const App: React.FC = () => {
           </ul>
           <p className="text-sm text-slate-400 mt-4 pt-4 border-t border-slate-100">
             This project is open source. You can audit the code on GitHub to verify these claims.
+          </p>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={activeModal === 'ios-install'}
+        onClose={() => setActiveModal(null)}
+        title="Install on iOS"
+      >
+        <div className="space-y-4 text-slate-600">
+          <p>Open the Share menu, choose Add to Home Screen, then confirm the app name.</p>
+          <p className="text-sm text-slate-400">
+            iOS uses this manual install flow instead of the browser install prompt.
           </p>
         </div>
       </Modal>
