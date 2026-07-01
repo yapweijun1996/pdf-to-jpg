@@ -1,6 +1,6 @@
 import React from 'react';
 import { Download, Image as ImageIcon } from 'lucide-react';
-import { ConvertedImage } from '../types';
+import { ConvertedImage } from '@/types/conversion';
 import saveAs from 'file-saver';
 
 interface ImageGridProps {

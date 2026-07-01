@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import JSZip from 'jszip';
 import saveAs from 'file-saver';
-import { ConvertedImage } from '../types';
+import { ConvertedImage } from '@/types/conversion';
 
 export const useZipDownload = () => {
   const [isZipping, setIsZipping] = useState(false);

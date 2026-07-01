@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
-import { ConversionState, ConversionStatus, ConvertedImage } from '../types';
-import { initPdfJs, readFileAsArrayBuffer, renderPageToBlob } from '../utils/pdfUtils';
-import { APP_CONFIG } from '../utils/constants';
+import { ConversionState, ConversionStatus, ConvertedImage } from '@/types/conversion';
+import { initPdfJs, readFileAsArrayBuffer, renderPageToBlob } from '@/lib/pdf/pdfUtils';
+import { APP_CONFIG } from '@/config/app';
 
 const INITIAL_STATE: ConversionState = {
   status: ConversionStatus.IDLE,

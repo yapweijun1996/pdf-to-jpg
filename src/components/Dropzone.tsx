@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { UploadCloud, FileType, AlertCircle } from 'lucide-react';
-import { APP_CONFIG } from '../utils/constants';
+import { UploadCloud, AlertCircle } from 'lucide-react';
+import { APP_CONFIG } from '@/config/app';
 
 interface DropzoneProps {
   onFileAccepted: (file: File) => void;

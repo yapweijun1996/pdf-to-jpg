@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { FileText, Download, RefreshCw, Zap, ShieldCheck, CheckCircle2, Github } from 'lucide-react';
-import { Dropzone } from './components/Dropzone';
-import { ImageGrid } from './components/ImageGrid';
-import { Modal } from './components/Modal';
-import { usePdfConverter } from './hooks/usePdfConverter';
-import { useZipDownload } from './hooks/useZipDownload';
-import { ConversionStatus } from './types';
-import { APP_CONFIG } from './utils/constants';
+import { Dropzone } from '@/components/Dropzone';
+import { ImageGrid } from '@/components/ImageGrid';
+import { Modal } from '@/components/Modal';
+import { usePdfConverter } from '@/hooks/usePdfConverter';
+import { useZipDownload } from '@/hooks/useZipDownload';
+import { ConversionStatus } from '@/types/conversion';
+import { APP_CONFIG } from '@/config/app';
 
 const App: React.FC = () => {
   const { state, processFile, reset } = usePdfConverter();

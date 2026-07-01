@@ -1,4 +1,4 @@
-import { ConvertedImage } from '../types';
+import { ConvertedImage } from '@/types/conversion';
 import { v4 as uuidv4 } from 'uuid';
 
 // Constants for PDF.js CDN
